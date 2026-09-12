@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070411" />
+    <meta
+      name="description"
+      content="Enter the arcade for Mohamed's 9th birthday — Friday, September 18, 2026 at Rush Hub."
+    />
+    <title>Mohamed Levels Up to 9!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700;800&amp;family=Press+Start+2P&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="is-locked">
+    <canvas class="pixel-sky" id="pixel-sky" data-component="pixelSky" aria-hidden="true"></canvas>
+    <div class="scanlines" data-component="scanlines" aria-hidden="true"></div>
+    <div class="noise" data-component="noise" aria-hidden="true"></div>
+    <div class="cursor-glow" id="cursor-glow" data-component="cursorGlow" aria-hidden="true"></div>
+
+    <section class="boot-gate" id="boot-gate" data-component="entryGate" aria-label="Open Mohamed's invitation">
+      <div class="gate-grid" aria-hidden="true"></div>
+      <div class="gate-orb gate-orb--cyan" aria-hidden="true"></div>
+      <div class="gate-orb gate-orb--pink" aria-hidden="true"></div>
+
+      <div class="gate-console">
+        <div class="console-topline">
+          <span><i class="status-dot"></i> PLAYER DETECTED</span>
+          <span>LEVEL 09</span>
+        </div>
+
+        <div class="gate-copy">
+          <p class="micro-label">MOHAMED'S BIRTHDAY // PRIVATE ACCESS</p>
+          <h1>PRESS <span>PLAY</span><br />ON NINE</h1>
+          <p>One swipe. One wish. A whole new level.</p>
+        </div>
+
+        <div class="candle-console" id="candle-console">
+          <div class="candle-rings" aria-hidden="true"></div>
+          <div class="pixel-flame" id="pixel-flame" aria-hidden="true">
+            <span class="flame-pixel flame-pixel--outer"></span>
+            <span class="flame-pixel flame-pixel--middle"></span>
+            <span class="flame-pixel flame-pixel--core"></span>
+          </div>
+          <div class="smoke-stack" id="smoke-stack" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </div>
+          <div class="pixel-wick" aria-hidden="true"></div>
+          <div class="pixel-candle" aria-hidden="true">
+            <span class="candle-nine">9</span>
+            <span class="candle-shine"></span>
+          </div>
+          <div class="mini-cake" aria-hidden="true">
+            <span class="mini-cake__icing"></span>
+            <span class="mini-cake__base"></span>
+            <span class="mini-cake__plate"></span>
+          </div>
+          <div class="swipe-lane" id="swipe-lane" data-component="swipeGuide" aria-hidden="true">
+            <span class="swipe-hand">☝</span>
+            <span class="swipe-dashes"></span>
+          </div>
+        </div>
+
+        <button class="swipe-button" id="swipe-button" type="button">
+          <span class="button-icon">↔</span>
+          <span id="swipe-copy">SWIPE ACROSS THE FLAME</span>
+        </button>
+        <p class="gate-hint" id="gate-hint">Drag through the flame to power up the invitation</p>
+      </div>
+
+      <div class="swipe-trail-layer" id="swipe-trail-layer" aria-hidden="true"></div>
+    </section>
+
+    <section class="level-transition is-hidden" id="level-transition" data-component="levelTransition" aria-hidden="true">
+      <div class="level-transition__glitch" aria-hidden="true"></div>
+      <p>NEW PLAYER UNLOCKED</p>
+      <strong>MOHAMED</strong>
+      <span>LEVEL 09</span>
+      <div class="loading-bar"><i></i></div>
+    </section>
+
+    <button class="sound-orb is-hidden" id="sound-orb" data-component="musicPlayer" type="button" aria-label="Open music controls">
+      <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    </button>
+
+    <aside class="sound-panel is-hidden" id="sound-panel" data-component="musicPlayer" aria-label="Music controls">
+      <div class="sound-panel__art" aria-hidden="true">♪</div>
+      <div class="sound-panel__copy">
+        <span>NOW PLAYING</span>
+        <strong>8-BIT BIRTHDAY</strong>
+        <small>MOHAMED'S ARCADE MIX</small>
+      </div>
+      <button id="audio-toggle" type="button" aria-label="Pause music">Ⅱ</button>
+      <label class="volume-control" aria-label="Music volume">
+        <span>VOL</span>
+        <input id="volume-range" type="range" min="0" max="100" value="90" />
+      </label>
+      <button class="sound-close" id="sound-close" type="button" aria-label="Close music controls">×</button>
+    </aside>
+
+    <audio id="birthday-audio" preload="auto" loop>
+      <source src="./assets/audio/mohamed-8bit-birthday.mp3" type="audio/mpeg" />
+    </audio>
+
+    <nav class="arcade-nav is-hidden" id="arcade-nav" data-component="sideNav" aria-label="Invitation sections">
+      <a href="#home" aria-label="Home"><span>01</span></a>
+      <a href="#countdown" aria-label="Countdown"><span>02</span></a>
+      <a href="#mission" aria-label="Party details"><span>03</span></a>
+      <a href="#location" aria-label="Location"><span>04</span></a>
+      <a href="#wishes" aria-label="Wishes"><span>05</span></a>
+      <a href="#cake" aria-label="Cake reveal"><span>06</span></a>
+    </nav>
+
+    <main class="game-world is-hidden" id="game-world">
+      <header class="top-hud" data-component="topHud">
+        <a class="hud-logo" href="#home" aria-label="Mohamed's ninth birthday home">
+          <span>M</span>
+          <div>MOHAMED<strong>ARCADE</strong></div>
+        </a>
+        <div class="hud-stats">
+          <span>PLAYER <strong>M09</strong></span>
+          <span>STATUS <strong class="online">ONLINE</strong></span>
+          <span>SCORE <strong id="live-score">000900</strong></span>
+        </div>
+      </header>
+
+      <section class="hero section-shell" id="home" data-section="hero">
+        <div class="hero-spotlight" aria-hidden="true"></div>
+        <div class="hero-pixels hero-pixels--one" aria-hidden="true"></div>
+        <div class="hero-pixels hero-pixels--two" aria-hidden="true"></div>
+
+        <div class="hero-copy reveal-item">
+          <p class="micro-label"><span>●</span> INSERT FUN TO CONTINUE</p>
+          <div class="hero-title-wrap">
+            <p>PLAYER ONE</p>
+            <h2>MOHAMED</h2>
+            <div class="level-lockup">
+              <span>LEVELS UP TO</span>
+              <strong data-text="09">09</strong>
+            </div>
+          </div>
+          <p class="hero-intro">You're invited to the ultimate birthday mission: three hours of games, power-ups, and next-level fun.</p>
+          <div class="hero-actions">
+            <a class="arcade-button arcade-button--primary" href="#mission"><span>VIEW MISSION</span><i>▶</i></a>
+            <a class="arcade-button arcade-button--ghost" href="#location"><span>OPEN MAP</span><i>⌖</i></a>
+          </div>
+        </div>
+
+        <div class="hero-machine reveal-item" data-component="arcadeMachine" aria-label="Decorative arcade machine">
+          <div class="machine-crown"><span>HIGH SCORE</span><strong>000009</strong></div>
+          <div class="machine-screen">
+            <div class="screen-grid"></div>
+            <div class="pixel-avatar" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <span class="ready-label">READY?</span>
+            <strong class="start-label">START!</strong>
+            <div class="dot-run"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="machine-controls">
+            <div class="joystick"><i></i><span></span></div>
+            <div class="arcade-controls"><i></i><i></i></div>
+          </div>
+          <div class="machine-speaker"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <a class="scroll-cue" href="#countdown" aria-label="Scroll to countdown">
+          <span>SCROLL TO PLAY</span><i>↓</i>
+        </a>
+      </section>
+
+      <div class="ticker" data-component="marquee" aria-hidden="true">
+        <div class="ticker__track">
+          <span>MOHAMED TURNS 9</span><i>✦</i><span>GAME ON</span><i>✦</i><span>FRIDAY SEPT 18</span><i>✦</i><span>RUSH HUB</span><i>✦</i>
+          <span>MOHAMED TURNS 9</span><i>✦</i><span>GAME ON</span><i>✦</i><span>FRIDAY SEPT 18</span><i>✦</i><span>RUSH HUB</span><i>✦</i>
+        </div>
+      </div>
+
+      <section class="countdown-section section-shell" id="countdown" data-section="countdown">
+        <div class="section-heading reveal-item">
+          <p class="section-kicker"><span>02</span> NEXT LEVEL LOADING</p>
+          <h2>THE COUNTDOWN<br /><em>IS ON</em></h2>
+          <p>Friday, September 18, 2026 · Party starts at exactly 4:00 PM</p>
+        </div>
+
+        <div class="countdown-console reveal-item" data-component="countdownClock" aria-live="polite">
+          <div class="countdown-status">
+            <span><i></i> SYSTEM CLOCK SYNCED</span>
+            <span>CAIRO // GMT+3</span>
+          </div>
+          <div class="countdown-grid">
+            <div class="time-card"><strong id="days">00</strong><span>DAYS</span></div>
+            <b>:</b>
+            <div class="time-card"><strong id="hours">00</strong><span>HOURS</span></div>
+            <b>:</b>
+            <div class="time-card"><strong id="minutes">00</strong><span>MINUTES</span></div>
+            <b>:</b>
+            <div class="time-card"><strong id="seconds">00</strong><span>SECONDS</span></div>
+          </div>
+          <div class="countdown-progress"><i id="countdown-progress"></i></div>
+          <p id="countdown-message">GET YOUR GAME FACE READY</p>
+        </div>
+      </section>
+
+      <section class="mission-section section-shell" id="mission" data-section="details">
+        <div class="section-heading section-heading--split reveal-item">
+          <div>
+            <p class="section-kicker"><span>03</span> MISSION BRIEF</p>
+            <h2>YOUR NEXT<br /><em>QUEST</em></h2>
+          </div>
+          <p>Gear up, arrive on time, and get ready to play. The arcade doors open at 4:00 PM and the mission ends at 7:00 PM.</p>
+        </div>
+
+        <div class="mission-grid">
+          <article class="mission-card mission-card--pink reveal-item">
+            <div class="mission-card__number">01</div>
+            <div class="mission-icon calendar-icon" aria-hidden="true"><i>18</i></div>
+            <p>MISSION DATE</p>
+            <h3>FRIDAY<br />SEPTEMBER 18</h3>
+            <span>2026</span>
+          </article>
+          <article class="mission-card mission-card--cyan reveal-item">
+            <div class="mission-card__number">02</div>
+            <div class="mission-icon clock-icon" aria-hidden="true"><i></i></div>
+            <p>PLAY WINDOW</p>
+            <h3>4:00 PM<br />TO 7:00 PM</h3>
+            <span>PLEASE ARRIVE ON TIME</span>
+          </article>
+          <article class="mission-card mission-card--yellow reveal-item">
+            <div class="mission-card__number">03</div>
+            <div class="mission-icon trophy-icon" aria-hidden="true">♛</div>
+            <p>PLAYER LEVEL</p>
+            <h3>MOHAMED<br />TURNS NINE</h3>
+            <span>CO-OP MODE: ON</span>
+          </article>
+        </div>
+
+        <div class="timeline reveal-item" data-component="partyTimeline">
+          <div><span>16:00</span><i></i><strong>CHECK IN</strong><small>Players assemble</small></div>
+          <div><span>16:15</span><i></i><strong>GAME ON</strong><small>Arcade action</small></div>
+          <div><span>18:15</span><i></i><strong>CAKE DROP</strong><small>Birthday power-up</small></div>
+          <div><span>19:00</span><i></i><strong>MISSION END</strong><small>Final high scores</small></div>
+        </div>
+      </section>
+
+      <section class="location-section section-shell" id="location" data-section="location">
+        <div class="location-copy reveal-item">
+          <p class="section-kicker"><span>04</span> PLAYER DESTINATION</p>
+          <h2>RUSH<br /><em>HUB</em></h2>
+          <p class="location-lead">The real-world arcade portal. Tap the map button for directions and arrive before the countdown hits zero.</p>
+          <div class="coordinate-strip"><span>30.0294° N</span><i>//</i><span>31.4969° E</span></div>
+          <a
+            class="arcade-button arcade-button--primary map-button"
+            href="https://maps.app.goo.gl/CJtRgtQWtcG6QL2q9"
+            target="_blank"
+            rel="noreferrer"
+          ><span>GET DIRECTIONS</span><i>⌖</i></a>
+        </div>
+
+        <div class="map-console reveal-item" data-component="mapEmbed">
+          <div class="map-console__top"><span>LIVE MAP // RUSH HUB</span><i></i><i></i><i></i></div>
+          <iframe
+            title="Map showing Rush Hub"
+            src="https://www.google.com/maps?q=30.0293651,31.4968941&z=16&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+          <div class="map-scan" aria-hidden="true"></div>
+          <div class="map-pin" aria-hidden="true"><span>09</span></div>
+          <div class="map-console__bottom"><span>DESTINATION LOCKED</span><strong>RUSH HUB</strong></div>
+        </div>
+      </section>
+
+      <section class="wishes-section section-shell" id="wishes" data-section="wishes">
+        <div class="section-heading section-heading--split reveal-item">
+          <div>
+            <p class="section-kicker"><span>05</span> BONUS MESSAGES</p>
+            <h2>WISH<br /><em>WALL</em></h2>
+          </div>
+          <p>Leave Mohamed a power-up for his next level. Wishes are saved on this device, so the wall stays ready when you return.</p>
+        </div>
+
+        <div class="wishes-console reveal-item">
+          <form class="wish-form" id="wish-form" data-component="wishesForm" novalidate>
+            <div class="form-top"><span>NEW_MESSAGE.EXE</span><i>●</i></div>
+            <label>
+              <span>PLAYER NAME</span>
+              <input id="wish-name" name="name" type="text" maxlength="24" placeholder="ENTER YOUR NAME" autocomplete="name" required />
+            </label>
+            <label>
+              <span>YOUR POWER-UP</span>
+              <textarea id="wish-message" name="message" maxlength="160" rows="4" placeholder="WRITE A BIRTHDAY WISH..." required></textarea>
+            </label>
+            <div class="power-picker" aria-label="Choose a wish icon">
+              <button type="button" class="is-selected" data-emoji="⚡" aria-label="Lightning power-up">⚡</button>
+              <button type="button" data-emoji="★" aria-label="Star power-up">★</button>
+              <button type="button" data-emoji="♥" aria-label="Heart power-up">♥</button>
+              <button type="button" data-emoji="🏆" aria-label="Trophy power-up">🏆</button>
+            </div>
+            <p class="form-message" id="form-message" role="status"></p>
+            <button class="arcade-button arcade-button--primary submit-wish" type="submit"><span>SEND POWER-UP</span><i>▶</i></button>
+          </form>
+
+          <div class="wish-feed-wrap" data-component="wishesFeed">
+            <div class="wish-feed-top"><span>POWER-UP INVENTORY</span><strong id="wish-count">00</strong></div>
+            <div class="wish-feed" id="wish-feed"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cake-section section-shell" id="cake" data-section="cake">
+        <div class="cake-copy reveal-item">
+          <p class="section-kicker"><span>06</span> FINAL BOSS</p>
+          <h2>UNLOCK THE<br /><em>BIRTHDAY CAKE</em></h2>
+          <p>Charge the birthday meter to 100% and reveal Mohamed's legendary level-nine cake.</p>
+          <button class="arcade-button arcade-button--primary" id="cake-unlock" type="button"><span>HOLD TO UNLOCK</span><i>⚡</i></button>
+          <div class="charge-meter" aria-label="Cake unlock progress"><i id="charge-fill"></i><span id="charge-value">00%</span></div>
+        </div>
+
+        <div class="cake-vault reveal-item" id="cake-vault" data-component="cakeReveal">
+          <div class="vault-door" id="vault-door">
+            <span class="vault-corner vault-corner--tl"></span><span class="vault-corner vault-corner--tr"></span>
+            <span class="vault-corner vault-corner--bl"></span><span class="vault-corner vault-corner--br"></span>
+            <div class="vault-lock"><i></i><strong>09</strong></div>
+            <p>CAKE VAULT</p>
+            <small>AWAITING PLAYER INPUT</small>
+          </div>
+          <div class="pixel-cake" id="pixel-cake" aria-label="Mohamed's level 9 birthday cake">
+            <div class="cake-stars" aria-hidden="true"><i>★</i><i>✦</i><i>★</i><i>✦</i><i>★</i></div>
+            <div class="cake-nine-candle"><span class="cake-fire"></span><strong>9</strong></div>
+            <div class="cake-tier cake-tier--top"><span>MOHAMED</span></div>
+            <div class="cake-tier cake-tier--middle"><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="cake-tier cake-tier--base"><span>LEVEL UP!</span></div>
+            <div class="cake-board"></div>
+          </div>
+          <div class="cake-unlocked-copy"><span>ACHIEVEMENT UNLOCKED</span><strong>SWEET LEVEL 09</strong></div>
+        </div>
+      </section>
+
+      <footer data-section="footer">
+        <div class="footer-logo"><span>M</span><strong>MOHAMED // LEVEL 09</strong></div>
+        <p>FRIDAY · SEPTEMBER 18 · 4:00–7:00 PM · RUSH HUB</p>
+        <a href="#home">BACK TO START ↑</a>
+      </footer>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="confetti-layer" id="confetti-layer" data-component="confetti" aria-hidden="true"></div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
