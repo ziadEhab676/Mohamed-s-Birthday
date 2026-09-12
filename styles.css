@@ -16,7 +16,7 @@
   --line: rgba(255, 255, 255, 0.13);
   --pixel: "Press Start 2P", ui-monospace, monospace;
   --body: "Oxanium", system-ui, sans-serif;
-  --shell: min(1180px, calc(100vw - 44px));
+  --shell: min(1180px, calc(100% - 44px));
   --clip: polygon(0 16px, 16px 16px, 16px 0, calc(100% - 16px) 0, calc(100% - 16px) 16px, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 16px calc(100% - 16px), 0 calc(100% - 16px));
 }
 
@@ -29,16 +29,29 @@
 html {
   scroll-behavior: smooth;
   scrollbar-color: var(--pink) var(--ink);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
+  position: relative;
   margin: 0;
+  width: 100%;
+  max-width: 100%;
   min-width: 320px;
   min-height: 100vh;
   color: var(--white);
   background: var(--ink);
   font-family: var(--body);
   overflow-x: hidden;
+}
+
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
 }
 
 body.is-locked {
@@ -580,6 +593,9 @@ a {
 .game-world {
   position: relative;
   z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 82% 8%, rgba(var(--pink-rgb), 0.1), transparent 25%),
     radial-gradient(circle at 12% 27%, rgba(var(--cyan-rgb), 0.08), transparent 24%),
@@ -1058,7 +1074,6 @@ a {
   border-block: 1px solid rgba(var(--pink-rgb), .5);
   background: var(--pink);
   color: #100419;
-  transform: rotate(-1deg) scale(1.02);
 }
 
 .ticker__track {
@@ -2212,7 +2227,7 @@ footer > a { justify-self: end; color: var(--cyan); }
 }
 
 @media (max-width: 760px) {
-  :root { --shell: min(100% - 32px, 620px); }
+  :root { --shell: min(calc(100% - 32px), 620px); }
   .top-hud { min-height: 74px; }
   .hud-stats span:not(:last-child) { display: none; }
   .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 130px; text-align: center; }

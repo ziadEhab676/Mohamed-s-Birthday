@@ -127,6 +127,8 @@ const state = {
   pointerStartX: 0,
   pointerStartY: 0,
   crossedFlame: false,
+  swipeQualified: false,
+  audioPrimed: false,
   selectedEmoji: "⚡",
   wishes: [],
   cakeCharge: 0,
@@ -176,6 +178,7 @@ function configureAudio() {
   elements.audio.src = CONFIG.music.src;
   elements.audio.volume = clamp(CONFIG.music.volume, 0, 1);
   elements.audio.loop = CONFIG.music.loop;
+  elements.audio.load();
   elements.volumeRange.value = String(Math.round(elements.audio.volume * 100));
 }
 
@@ -188,8 +191,10 @@ function setupEntryGate() {
     state.pointerStartX = event.clientX;
     state.pointerStartY = event.clientY;
     state.crossedFlame = pointTouchesFlame(event.clientX, event.clientY);
+    state.swipeQualified = false;
     elements.candleConsole.setPointerCapture?.(event.pointerId);
     leaveSwipeTrail(event.clientX, event.clientY);
+    primeAudioForSwipe();
   });
 
   elements.candleConsole.addEventListener("pointermove", (event) => {
@@ -200,17 +205,55 @@ function setupEntryGate() {
     const horizontalDistance = Math.abs(event.clientX - state.pointerStartX);
     const verticalDistance = Math.abs(event.clientY - state.pointerStartY);
     if (state.crossedFlame && horizontalDistance >= 64 && horizontalDistance > verticalDistance * 1.1) {
-      enterInvitation({ playMusic: true });
+      state.swipeQualified = true;
     }
   });
 
-  const endSwipe = () => {
+  const finishSwipe = () => {
+    const shouldEnter = state.pointerDown && state.swipeQualified;
     state.pointerDown = false;
     state.crossedFlame = false;
+    state.swipeQualified = false;
+
+    // Android Chrome grants media playback most reliably on pointerup/touchend.
+    if (shouldEnter) {
+      enterInvitation({ playMusic: true });
+    } else {
+      cancelAudioPrime();
+    }
   };
 
-  elements.candleConsole.addEventListener("pointerup", endSwipe);
-  elements.candleConsole.addEventListener("pointercancel", endSwipe);
+  elements.candleConsole.addEventListener("pointerup", finishSwipe);
+  elements.candleConsole.addEventListener("pointercancel", () => {
+    state.pointerDown = false;
+    state.crossedFlame = false;
+    state.swipeQualified = false;
+    cancelAudioPrime();
+  });
+}
+
+function primeAudioForSwipe() {
+  if (!CONFIG.music.enabled || state.audioPrimed || !elements.audio.paused) return;
+
+  const targetVolume = clamp(CONFIG.music.volume, 0, 1);
+  elements.audio.volume = 0;
+  const playAttempt = elements.audio.play();
+  state.audioPrimed = true;
+
+  if (playAttempt?.catch) {
+    playAttempt.catch(() => {
+      state.audioPrimed = false;
+      elements.audio.volume = targetVolume;
+    });
+  }
+}
+
+function cancelAudioPrime() {
+  if (!state.audioPrimed || state.entered) return;
+  elements.audio.pause();
+  elements.audio.currentTime = 0;
+  elements.audio.volume = clamp(CONFIG.music.volume, 0, 1);
+  state.audioPrimed = false;
 }
 
 function pointTouchesFlame(x, y) {
@@ -287,7 +330,10 @@ function revealWorld() {
 
 async function startMusic() {
   try {
+    elements.audio.muted = false;
+    elements.audio.volume = clamp(CONFIG.music.volume, 0, 1);
     await elements.audio.play();
+    state.audioPrimed = false;
     updateMusicButton();
   } catch (error) {
     showToast("TAP THE MUSIC BUTTON TO START THE 8-BIT TRACK");
